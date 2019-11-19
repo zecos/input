@@ -1,0 +1,11 @@
+.selectGroup {
+  color: inherit;
+  font-size: 18px;
+  font-family: inherit;
+  padding: 6px 4px;
+  border-radius: 4px;
+  margin-left: 12px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+}

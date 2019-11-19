@@ -1,0 +1,23 @@
+
+.textLabel {
+  padding: 0 10px;
+  flex: 0 0 100%;
+  display: block;
+}
+
+.errors {
+  color: red;
+  padding: 6px 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.textInput {
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  margin: 4px 0;
+  font-size: 1rem;
+  box-sizing: border-box;
+  flex: 1 0 0;
+}
