@@ -1,31 +1,71 @@
-# ui-cmpt
+### @zecos/ui
 
-> UI components for zecos
 
-[![NPM](https://img.shields.io/npm/v/ui-cmpt.svg)](https://www.npmjs.com/package/ui-cmpt) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+#### Installation
 
-## Install
+`yarn add @zecos/ui`
 
-```bash
-npm install --save ui-cmpt
-```
+`npm i -S @zecos/ui`
 
-## Usage
+#### About
+
+`@zecos/ui` is a library for quickly creating form fields in conjunction with `@zecos/react-fieldz`. It provides several simple UI components for rapid form prototyping:
+
+* `TextInput`
+  * `({actions, state, fieldName}) => <input />`
+* `TextArea`
+  * `({actions, state, fieldName}) => <textarea />`
+* `Select`
+  * `({actions, state, fieldName, options}) => <select />`
+
+
+#### Example
 
 ```tsx
-import * as React from 'react'
+import React from "react"
+import { nameValidator } from "@zecos/validatorz"
+import { useFieldz } from "@zecos/react-fieldz"
+import { TextInput, TextArea, Select } from "@zecos/ui"
 
-import MyComponent from 'ui-cmpt'
+const fieldProperties = {
+  name: {
+    init: "",
+    validate: nameValidator,
+  },
+  describeYourself: {
+    init: "",
+  },
+  favoriteColor: {
+    init: "red",
+  },
+}
 
-class Example extends React.Component {
-  render () {
-    return (
-      <MyComponent />
-    )
-  }
+const colors = {
+  red: "Red",
+  green: "Green",
+  blue: "blue",
+}
+
+export const Form = () => {
+  const [state, actions] = useFieldz(fieldProperties)
+
+  <form className="form">
+    <TextInput
+      fieldName="name"
+      state={state}
+      actions={actions}
+    />
+    <TextArea
+      fieldName="describeYourself"
+      state={state}
+      actions={actions}
+    />
+    <Select
+      fieldName="favoriteColor"
+      state={state}
+      actions={actions}
+      options={colors}
+    />
+  </form>
 }
 ```
-
-## License
-
-MIT © [zecos](https://github.com/zecos)
