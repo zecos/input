@@ -786,6 +786,26 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@zecos/fieldz@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@zecos/fieldz/-/fieldz-0.0.2.tgz#6e08292bf14818d02faf653ce70a0251612d857a"
+  integrity sha512-63+rY1EX63DjgDUdP8wIsOv+oiNWn13r90gh17OzCCXrrN8/PjSFhbyhVmyzBrNtmxDle5WUHWfPvVy3CaGJxQ==
+  dependencies:
+    "@zecos/validatorz" "0.0.1"
+
+"@zecos/react-fieldz@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@zecos/react-fieldz/-/react-fieldz-0.1.0.tgz#6ac429ec42470aab1194061671b6667b5033ab12"
+  integrity sha512-lw2sSU54HxaH1YPeK7vgXZd8OYT0UOODg2EOBHRrTrp5E69LcQxanHN6PIxgXRX+VkwNAxgA8kmnF8B5cy9szw==
+  dependencies:
+    fieldz "^0.1.0"
+    validatorz "^2.3.3"
+
+"@zecos/validatorz@0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@zecos/validatorz/-/validatorz-0.0.1.tgz#ee670d6748a085c8965a692ee8fcf2e3894a24c3"
+  integrity sha512-w38QHxcY7Le+tu8Urws7vcWbmn0cmqiKOUDFHV7SMmUAAmbkJUM6gFaEGfwnCDWip7B9kqrtQXfm6fXWn9cDGA==
+
 abab@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.3.tgz#623e2075e02eb2d3f2475e49f99c91846467907a"
@@ -3947,6 +3967,11 @@ fb-watchman@^2.0.0:
   integrity sha1-VOmr99+i8mzZsWNsWIwa/AXeXVg=
   dependencies:
     bser "^2.0.0"
+
+fieldz@^0.1.0:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/fieldz/-/fieldz-0.1.1.tgz#8510ffb4c1265fd527702b86bcc2c6b25e83bb1d"
+  integrity sha512-BoGwXbiwFcZ1/+AFd7sW30YAojN+vFuRlgjVQ/BT2xHBIxUJN1ze+XjhIRMZA7un/DJ2ehueY3ZafZxkHZ8MLQ==
 
 figures@^2.0.0:
   version "2.0.0"
@@ -9800,6 +9825,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+validatorz@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/validatorz/-/validatorz-2.3.3.tgz#920445b622562dcabc3ac9dc6902e161f0bf38bb"
+  integrity sha512-8g/VgYKz88VztfAQ3MmuJ1MY6yU/DuO3ObJhld9AJOO7yQ7/ueX36c6xjC+SlPJIvYCBnDR19lANJsyFjtumUg==
 
 vary@~1.1.2:
   version "1.1.2"

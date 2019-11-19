@@ -2,6 +2,8 @@ import * as React from "react";
 import styles from "./TextInput.css";
 import groupStyles from "./group.css";
 import { propz } from "@zecos/propz";
+import { ReactFieldzActions } from "@zecos/react-fieldz"
+import { IFieldzState } from '@zecos/fieldz'
 
 const renderError = error => <div className={styles.error}>{error.toString()}</div>
 const renderErrors = errors => {
@@ -14,7 +16,14 @@ const renderErrors = errors => {
     </div>
   )
 }
-export const TextInput = ({actions, state, fieldName}) => {
+
+export interface IOptions {
+  actions: ReactFieldzActions
+  state: IFieldzState
+  fieldName: string
+}
+
+export const TextInput = ({actions, state, fieldName}: IOptions) => {
   const { label, ...moreProps } = propz({actions, state, fieldName});
   const { touched, errors } = state[fieldName]
   const lcLabel = label.toLowerCase();

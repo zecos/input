@@ -1,15 +1,15 @@
-### @zecos/ui
+### @zecos/inputz
 
 
 #### Installation
 
-`yarn add @zecos/ui`
+`yarn add @zecos/inputz`
 
-`npm i -S @zecos/ui`
+`npm i -S @zecos/inputz`
 
 #### About
 
-`@zecos/ui` is a library for quickly creating form fields in conjunction with `@zecos/react-fieldz`. It provides several simple UI components for rapid form prototyping:
+`@zecos/inputz` is a library for quickly creating form fields in conjunction with `@zecos/react-fieldz`. It provides several simple UI components for rapid form prototyping:
 
 * `TextInput`
   * `({actions, state, fieldName}) => <input />`
@@ -25,7 +25,7 @@
 import React from "react"
 import { nameValidator } from "@zecos/validatorz"
 import { useFieldz } from "@zecos/react-fieldz"
-import { TextInput, TextArea, Select } from "@zecos/ui"
+import { TextInput, TextArea, Select } from "@zecos/inputz"
 
 const fieldProperties = {
   name: {
