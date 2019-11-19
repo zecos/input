@@ -17,13 +17,13 @@ const renderOption = ([key, value]) => {
   );
 };
 
-export const Select = ({opts, options}) => {
-  const { label, ...moreProps } = propz(opts);
+export const Select = ({actions, state, fieldName, options}) => {
+  const { label, ...moreProps } = propz({actions, state, fieldName});
   const lcLabel = label.toLowerCase();
   return (
     <div className={groupStyles.groupContainer}>
       <div className={groupStyles.formGroup}>
-        <label className={styles.textAreaLabel} htmlFor={lcLabel}>
+        <label htmlFor={lcLabel}>
           {label}
         </label>
       <select className={styles.selectGroup} {...moreProps}>

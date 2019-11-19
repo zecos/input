@@ -14,9 +14,9 @@ const renderErrors = errors => {
     </div>
   )
 }
-export const TextInput = ({opts}) => {
-  const { label, ...moreProps } = propz(opts);
-  const { touched, errors } = opts.state[opts.fieldName]
+export const TextInput = ({actions, state, fieldName}) => {
+  const { label, ...moreProps } = propz({actions, state, fieldName});
+  const { touched, errors } = state[fieldName]
   const lcLabel = label.toLowerCase();
 
   return (
