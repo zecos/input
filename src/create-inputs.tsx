@@ -51,8 +51,7 @@ export interface IInputProps {
   value: any
   name: string
   id: string
-  state: IFieldzSingleState
-  actions: ReactFieldzSingleActions
+  htmlFor: string
 }
 
 export const getHelpers  = ({name, actions }) => {
@@ -63,6 +62,7 @@ export const getHelpers  = ({name, actions }) => {
   const _name = snake
   const value = actions.getState().value
   const label = title
+  const htmlFor = _name
   const onChange = e => setValue(e.target.value)
   const onBlur = () => setTouched()
 
@@ -77,6 +77,7 @@ export const getHelpers  = ({name, actions }) => {
     camel: _name,
     title,
     snake,
+    htmlFor,
   }
 }
 
@@ -95,7 +96,7 @@ export interface ICreateInputzCreatorReturnOpts extends IFieldzInputObject {
 
 export type InputzCreatorFn = (opts: IInputProps) => any
 
-export const createInputCreator = (Cmpt): any => (opts, ...more) => {
+export const createInput = (Cmpt): any => (opts, ...more) => {
   const {init, validate} = opts
   const [_, actions] = useField({
     init: init || "",
