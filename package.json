@@ -1,10 +1,10 @@
 {
-  "name": "@zecos/inputz",
-  "version": "0.0.2",
+  "name": "@zecos/inputs",
+  "version": "0.0.0",
   "description": "Input UI components for zecos",
   "author": "Zane Hitchcox",
   "license": "MIT",
-  "repository": "https://github.com/zecos/inputz",
+  "repository": "https://github.com/zecos/inputs",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",

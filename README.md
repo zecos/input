@@ -1,12 +1,12 @@
-### @zecos/inputz
+### @zecos/inputs
 
-`@zecos/inputz` is a library for quickly creating React UI components with little to no boilerplate.
+`@zecos/inputs` is a library for quickly creating React UI components with little to no boilerplate.
 
 #### Installation
 
-`yarn add @zecos/inputz`
+`yarn add @zecos/inputs`
 
-`npm i -S @zecos/inputz`
+`npm i -S @zecos/inputs`
 
 #### Example
 
@@ -53,7 +53,8 @@ import { text } from "./text"
 export const Form = () => {
   const [FirstName, firstNameState, firstNameActions] = text({
     name: "firstName",
-    validate: nameValdiator,
+    validate: nameValidator,
+    init: "Bob",
   })
 
   return (
@@ -66,7 +67,7 @@ export const Form = () => {
 }
 ```
 
-For full example, see [@zecos/inputz-basic](https://github.com/zecos/inputz-basic), or better yet, fork it and create your own UI!
+For full example, see [@zecos/inputs-basic](https://github.com/zecos/inputs-basic), or better yet, fork it and create your own UI!
 
 #### How it works
 
@@ -92,8 +93,33 @@ For full example, see [@zecos/inputz-basic](https://github.com/zecos/inputz-basi
   * `onChange`: a function that sets the field value to the event's target value
   * `onBlur`: a function that sets the field's `touched` property to `true`
   * `value`: value of the field 
-  * `label`: the form name in title case
+  * `label`: the form name in title case (for convenience)
   * `name`: the form name in snake case (for convenience)
+  * `htmlFor`: same as `name`
   * `id`: the form name in snake case (for convenience)
-  state: IFieldzSingleState
-  actions: ReactFieldzSingleActions
+* `args`: arguments passed after the `inputs` options
+  * so in our example, after `{name: "firstName", ...}` you could pass additional arguments that would show up here.
+
+The user is then passed your input, along with the form state and actions:
+
+```ts
+const [FirstName, firstNameState, firstNameActions] = text({
+  name: "firstName",
+  validate: nameValidator,
+  init: "Bob",
+})
+```
+
+The user can read all the values you can from `state` or perform any of the actions you can with `actions`, and each time your form will be rerendered. This gives you all the benefits of customization and and convenience of automatic generation.
+
+The first argument given to `text` (`{name: "firstName", ...}`) are consumed by `inputs` and are used to generated the `helpers`/`state`/`actions` properties.
+
+* `name`: is the name given to the form.
+  * it is *crucial* that this is in camelcase in order to generate the proper title case, snake case, etc.. Make sure you communicate this to your user.
+  * this is required
+* `validate`: should be a function that takes the form value and outputs an array of errors.
+  * not required (will just not validate anything)
+  * works very will with the [`@zecos/validatorz`](https://npmjs.org/@zecos/validatorz`) library
+* `init`: initial value for the field
+  * default is `""` (empty string)
+  * if your input requires a number, make sure to change `""` to 0, likewise with other types `""` would be invalid for.
