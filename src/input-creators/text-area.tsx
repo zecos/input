@@ -1,9 +1,7 @@
 import * as React from "react";
-import styles from "./TextArea.css";
+import styles from "./text-area.css";
 import groupStyles from "./group.css"
-import { propz } from '@zecos/propz'
-import { ReactFieldzActions } from "@zecos/react-fieldz";
-import { IFieldzState } from '@zecos/fieldz'
+import { createInputCreator } from "../create-inputs";
 
 const renderError = error => <div className={styles.error}>{error.toString()}</div>
 const renderErrors = errors => {
@@ -17,29 +15,39 @@ const renderErrors = errors => {
   )
 }
 export interface IOptions {
-  actions: ReactFieldzActions
-  state: IFieldzState
-  fieldName: string
+  rows?: number
 }
 
-export const TextArea = ({actions, state, fieldName}: IOptions) => {
-  const { label, ...moreProps } = propz({actions, state, fieldName});
-  const { touched, errors } = state[fieldName]
-  const lcLabel = label.toLowerCase();
+export const textArea = createInputCreator(({helpers, state, props}) => {
+  const {
+    id,
+    name,
+    label,
+    value,
+    onChange,
+    onBlur,
+  } = helpers
+
+  const { touched, errors } = state
   return (
     <div className={groupStyles.groupContainer}>
       <div className={groupStyles.formGroup}>
-        <label className={styles.textAreaLabel} htmlFor={lcLabel}>
+        <label className={styles.textAreaLabel} htmlFor={name}>
           {label}
         </label>
         {touched && renderErrors(errors)}
+        {/* explicit better than implicit */}
         <textarea
+          rows={props.rows || 3}
           className={styles.textArea}
-          name={lcLabel}
+          name={name}
           aria-label={label}
-          {...moreProps}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          id={id}
         />
       </div>
     </div>
-  );
-};
+  )
+})
