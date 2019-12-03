@@ -47,7 +47,7 @@ export const text = createInput(({helpers, state}) => {
 // Form.tsx
 
 import React from "react"
-import { nameValidator } from "@zecos/validatorz"
+import { nameValidator } from "@zecos/validators"
 import { text } from "./text"
 
 export const Form = () => {
@@ -119,7 +119,87 @@ The first argument given to `text` (`{name: "firstName", ...}`) are consumed by 
   * this is required
 * `validate`: should be a function that takes the form value and outputs an array of errors.
   * not required (will just not validate anything)
-  * works very will with the [`@zecos/validatorz`](https://npmjs.org/@zecos/validatorz`) library
+  * works very will with the [`@zecos/validators`](https://npmjs.org/@zecos/validators`) library
 * `init`: initial value for the field
   * default is `""` (empty string)
   * if your input requires a number, make sure to change `""` to 0, likewise with other types `""` would be invalid for.
+
+#### Select Example
+
+To demonstrate the power an flexibility of these options, let's take a look at a select input.
+
+```tsx
+// select.tsx
+
+const renderOption = ([key, label]) => {
+  return (
+    <option key={key} value={key}>
+      {label}
+    </option>
+  )
+}
+
+export const select = createInput(({helpers, props}) => {
+  const {
+    id,
+    name,
+    value,
+    onChange,
+    onBlur,
+    label,
+    htmlFor,
+  } = helpers
+
+  return (
+    <div>
+      <label className={styles.label} htmlFor={htmlFor}>
+        {label}
+      </label>
+      <select
+        className={styles.selectGroup}
+        onChange={onChange}
+        onBlur={onBlur}
+        name={name}
+        id={id}
+        value={value}
+        aria-label={label}
+      >
+        {Object.entries((args[0] && args[0].options) || props.options).map(renderOption)}
+      </select>
+    </div>
+  )
+})
+```
+
+```tsx
+// Form.tsx
+
+import React from "react"
+import { nameValidator } from "@zecos/validators"
+import { text } from "./text"
+
+export const Form = () => {
+  const [FavoriteColor, favoriteColorState] = select({
+    init: "blue",
+    name: "favoriteColor",
+  }, {options={{green: "Green", blue: "Blue"}}})
+
+  return (
+    <form className="form">
+      <FavoriteColor options={{blue: "Blue", red: "Red"}}/>
+      Favorite Color: {favoriteColorState.value}
+      
+    </form>
+  )
+}
+```
+
+Here, you can see we can either pass options through the initializer or through the props of the React component, and we can let our component decide which one to use.
+
+#### Conclusion 
+
+You can imagine how this can be used to create powerful, scalable UI components.
+
+The flexibility and lack of boilerplate of this library will allow you to rapidly implement changes to your entire UI, and you're not stuck with one look like Material Design, bootstrap, or any other UI library. But you *can* still use those if you want. You get the best of both worlds.
+
+So, create your UI library and share it with the world or with your team!
