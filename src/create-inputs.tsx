@@ -36,14 +36,16 @@ const camelToTitle = camelCase => camelCase
   .replace(/^./g, match => match.toUpperCase())
   .trim()
 
-const titleToSnake = title => title
+const titleToKebab = title => title
   .replace(/ ([A-Z])/g, match => `-${match.trim()}`)
   .toLowerCase()
+  
+const kebabToSnake = kebab => kebab.replace("-", "_")
 
 export interface IInputProps {
   title: string
   camel: string
-  snake: string
+  kebab: string
   "aria-label": string
   onChange: (e: React.ChangeEvent) => void
   onBlur: (e: any) => void
@@ -57,9 +59,10 @@ export interface IInputProps {
 export const getHelpers  = ({name, actions }) => {
   const { setValue, setTouched } = actions
   const title = camelToTitle(name)
-  const snake = titleToSnake(name)
-  const id = snake
-  const _name = snake
+  const kebab = titleToKebab(title)
+  const snake = kebabToSnake(kebab)
+  const id = kebab
+  const _name = kebab
   const value = actions.getState().value
   const label = title
   const htmlFor = _name
@@ -76,6 +79,7 @@ export const getHelpers  = ({name, actions }) => {
     "aria-label": title,
     camel: _name,
     title,
+    kebab,
     snake,
     htmlFor,
   }
