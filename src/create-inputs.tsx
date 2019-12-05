@@ -103,7 +103,7 @@ export type InputzCreatorFn = (opts: IInputProps) => any
 export const createInput = (Cmpt): any => (opts, ...more) => {
   const {init, validate} = opts
   const [_, actions] = useField({
-    init: init || "",
+    init: typeof init === "undefined" ? "" : init,
     validate: validate || (() => []),
   })
   
