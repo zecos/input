@@ -1,1 +1,1 @@
-export { createInput } from './create-inputs'
+export { createInput, createLayout } from './create-inputs'
