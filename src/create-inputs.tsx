@@ -25,7 +25,6 @@ export interface IInputHelpers {
   onChange: (e: React.ChangeEvent) => void
   onBlur: (e: any) => void
   label: string
-  value: any
   name: string
   snake: string
   id: string
@@ -44,12 +43,10 @@ export const getHelpers = ({actions, name}): IInputHelpers => {
   const label = title
   const htmlFor = _name
   const { setValue, setTouched } = actions
-  const value = actions.getState().value
   const onChange = e => setValue(e.target.value)
   const onBlur = () => setTouched()
 
   return {
-    value,
     onChange,
     onBlur,
     id,
@@ -118,11 +115,7 @@ export const createInput = (InputCmpt): any => (opts: IInputOpts) => {
   }
 }
 
-const getNewState = ([cmpt, _state, actions, meta]) => (
-  [cmpt, actions.getState(), actions, meta]
-)
-
-const inputsByKey = inputs => {
+const byKey = inputs => {
 
 }
 
@@ -141,12 +134,34 @@ export interface ILayoutOpts {
   props?: { [key: string]: any}
 }
 
+const getType = val => {
+  if (typeof val === "object" && typeof val.meta === "object") {
+    return val.meta.$$__inputs_type
+  }
+  return "unknown"
+}
+
+const getUpdated = item => {
+  if (getType(item) === "input") {
+    return {
+      ...item,
+      state: item.actions.getState()
+    }
+  } else if (getType(item) === "layout") {
+    return {
+      ...item,
+      inputs: item.inputs.map(getUpdated)
+    }
+  }
+  return item
+}
+
 export const createLayout = (LayoutCmpt: any) => (opts: ILayoutOpts) => {
   const { name } = opts
   if (typeof name === "undefined") {
     throw new Error("You must provide a camelcased name for the layout.")
   }
-  const inputs = opts.inputs || []
+  let inputs = opts.inputs || []
   const validate = opts.validate || (() => [])
   const initialProps = opts.props || {}
 
@@ -157,6 +172,7 @@ export const createLayout = (LayoutCmpt: any) => (opts: ILayoutOpts) => {
     const upperCamel = camelToUpperCamel(name)
     const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
     const fc: React.FC = props => {
+      inputs = inputs.map(getUpdated)
       const errors = validate(inputs)
       return (
         <LayoutCmpt
