@@ -1,36 +1,7 @@
 import * as React from "react"
 import { IFieldzInputObject, IFieldzSingleState } from "@zecos/fieldz/types"
 import { useField, ReactFieldzSingleActions } from "@zecos/react-fieldz"
-import { isAbsolute } from "path"
 
-// export interface ICreateInputzProperty extends IFieldzInputObject {
-//   type: "select" | "text" | "textarea"
-// }
-
-// export interface ICreateInputzProperties {
-//   [name: string]: ICreateInputzProperty
-// }
-
-// export interface ICreateInputsResult {
-//   [name: string]: React.FC
-// }
-
-// export const createInputs = props => {
-//   const result: ICreateInputsResult = {}
-//   for (const name in props) {
-//     const prop = props[name]
-//     const { type, ...fieldzProps } = prop
-//     const [ state, actions  ] = useFieldz(fieldzProps)
-//     if (type === "select") {
-//       result[name] = <Select
-//         fieldName={name}
-//         actions={actions}
-//         state={state}
-//         options={}
-//       />
-//     }
-//   }
-// }
 
 const camelToTitle = camelCase => camelCase
   .replace(/([A-Z])/g, match => ` ${match}`)
@@ -42,9 +13,11 @@ const titleToKebab = title => title
   .replace(/ ([A-Z])/g, match => `-${match.trim()}`)
   .toLowerCase()
   
-const kebabToSnake = kebab => kebab.replace("-", "_")
+const kebabToSnake = (kebab: string) => kebab.replace("-", "_")
 
-export interface IInputProps {
+const camelToUpperCamel = (name: string) => name.charAt(0).toUpperCase() + name.slice(1)
+
+export interface IInputHelpers {
   title: string
   camel: string
   kebab: string
@@ -54,14 +27,18 @@ export interface IInputProps {
   label: string
   value: any
   name: string
+  snake: string
   id: string
   htmlFor: string
+  upperCamel: string
 }
 
-export const getHelpers = ({actions, name}) => {
+export const getHelpers = ({actions, name}): IInputHelpers => {
   const title = camelToTitle(name)
   const kebab = titleToKebab(title)
   const snake = kebabToSnake(kebab)
+  const upperCamel = camelToUpperCamel(name)
+  const camel = name
   const id = kebab
   const _name = kebab
   const label = title
@@ -79,92 +56,137 @@ export const getHelpers = ({actions, name}) => {
     name: _name,
     label,
     "aria-label": title,
-    camel: _name,
+    camel,
+    upperCamel,
     title,
     kebab,
     snake,
     htmlFor,
   }
 }
-
-export type InputzData = [
-  JSX.Element,
-  IFieldzSingleState,
-  ReactFieldzSingleActions
-]
-
-export interface ICreateInputzCreatorReturnOpts extends IFieldzInputObject {
+export interface IInputOpts {
   name: string
+  init?: any
+  validate?: (inputs?: any[]) => Error[]
+  props?: { [key: string]: any}
 }
 
-// export type CreateInputzCreatorReturn =
-//   (opts: ICreateInputzCreatorReturnOpts) => CreateInputzCreatorReturnFn
+export const createInput = (InputCmpt): any => (opts: IInputOpts) => {
+  const {init, name} = opts
+  const validate = opts.validate || (() => [])
+  const initialProps = opts.props || {}
 
-export type InputzCreatorFn = (opts: IInputProps) => any
-
-export const createInput = (Cmpt): any => (opts, ...more) => {
-  const {init, validate, name} = opts
   const [_, actions] = useField({
     init: typeof init === "undefined" ? "" : init,
-    validate: validate || (() => []),
+    validate,
   })
   
   // have to use singleton to make sure it doesn't create another
   // input every render and lose focus
-  const [cmpt] = React.useState(() => {
+  const [[Cmpt, helpers]] = React.useState<[React.FC, IInputHelpers]>(() => {
       const helpers = getHelpers({actions, name})
-      return props => {
+      return [props => {
         const state = actions.getState()
         return (
-          <Cmpt
-            props={props}
+          <InputCmpt
+            props={{
+              ...initialProps,
+              ...props,
+            }}
             helpers={helpers}
             state={state}
             actions={actions}
-            args={more}
           />
         )
-    }
+    }, helpers]
   })
-  const meta = {name}
+  const meta = {$$__inputs_type: "input"}
+  const state = actions.getState()
 
-  return [cmpt, actions.getState(), actions, meta]
+  return {
+    Cmpt,
+    state,
+    actions,
+    meta,
+    helpers,
+    [helpers.upperCamel]: Cmpt,
+    [name + "State"]: state,
+    [name + "Actions"]: actions,
+    [name + "Meta"]: meta,
+    [name + "Helpers"]: helpers,
+    name,
+  }
 }
 
 const getNewState = ([cmpt, _state, actions, meta]) => (
   [cmpt, actions.getState(), actions, meta]
 )
 
-export const createLayout = (Cmpt: any) => (opts) => {
-  const { inputs, name } = opts
+const inputsByKey = inputs => {
+
+}
+
+export interface ILayoutHelpers {
+  kebab: string
+  snake: string
+  title: string
+  upperCamel: string
+  name: string
+}
+
+export interface ILayoutOpts {
+  name: string
+  inputs?: any[]
+  validate?: (inputs?: any[]) => Error[]
+  props?: { [key: string]: any}
+}
+
+export const createLayout = (LayoutCmpt: any) => (opts: ILayoutOpts) => {
+  const { name } = opts
+  if (typeof name === "undefined") {
+    throw new Error("You must provide a camelcased name for the layout.")
+  }
+  const inputs = opts.inputs || []
   const validate = opts.validate || (() => [])
-  const [cmpt] = React.useState(() => {
+  const initialProps = opts.props || {}
+
+  const [[Cmpt, helpers]] = React.useState<[React.FC, ILayoutHelpers]>(() => {
     const title = camelToTitle(name)
     const kebab = titleToKebab(title)
     const snake = kebabToSnake(kebab)
-
-    return props => {
-      const newInputs = inputs.map(getNewState)
-      const errors = validate(newInputs)
-      return (<Cmpt
-        inputs={newInputs}
-        props={props}
-        errors={errors}
-        helpers={{
-          name,
-          snake,
-          kebab,
-          title
-        }}
-      />)
+    const upperCamel = camelToUpperCamel(name)
+    const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
+    const fc: React.FC = props => {
+      const errors = validate(inputs)
+      return (
+        <LayoutCmpt
+          inputs={inputs}
+          props={{
+            ...initialProps,
+            ...props,
+          }}
+          errors={errors}
+          helpers={helpers}
+        />
+      )
     }
-  })
-  const mappedInputs = inputs.reduce((acc, cur) => {
-    const [_cmpt, _state, _actions, meta] = cur
-    acc[meta.name] = cur
-    return acc
-  }, {})
-  const errors = validate(inputs)
 
-  return [cmpt, mappedInputs, errors]
+    return [fc, helpers]
+  })
+  const errors = validate(inputs)
+  const meta = {$$__inputs_type: "input"}
+
+  return {
+    Cmpt,
+    inputs,
+    errors,
+    meta,
+    helpers,
+    name,
+    [helpers.upperCamel]: Cmpt,
+    [name + "Inputs"]: inputs,
+    [name + "Errors"]: errors,
+    [name + "Meta"]: meta,
+    [name + "Helprs"]: helpers,
+  }
 }
