@@ -1,5 +1,5 @@
 import * as React from "react"
-import { IFieldzInputObject, IFieldzSingleState } from "@zecos/fieldz/types"
+import { IFieldzSingleState } from "@zecos/fieldz/types"
 import { useField, ReactFieldzSingleActions } from "@zecos/react-fieldz"
 
 
@@ -104,9 +104,9 @@ export const createInput:InputCreatorCreator = InputCmpt => opts => {
   
   // have to use singleton to make sure it doesn't create another
   // input every render and lose focus
-  const [[Cmpt, helpers]] = React.useState<[React.FC, IInputHelpers]>(() => {
+  const [[Cmpt, helpers]] = React.useState<[WithPropsFC, IInputHelpers]>(() => {
       const helpers = getHelpers({actions, name})
-      return [props => {
+      return [initialProps => props => {
         const state = actions.getState()
         return (
           <InputCmpt
@@ -123,14 +123,15 @@ export const createInput:InputCreatorCreator = InputCmpt => opts => {
   })
   const meta = {$$__inputs_type: "input"}
   const state = actions.getState()
+  const CmptWithProps = Cmpt(initialProps)
 
   return {
-    Cmpt,
+    Cmpt: CmptWithProps,
     state,
     actions,
     meta,
     helpers,
-    [helpers.upperCamel]: Cmpt,
+    [helpers.upperCamel]: CmptWithProps,
     [name + "State"]: state,
     [name + "Actions"]: actions,
     [name + "Meta"]: meta,
@@ -194,6 +195,7 @@ export interface ILayout {
 
 export type LayoutCreator = (opts: ILayoutOpts) => ILayout
 type LayoutCreatorCreator = (LayoutCmpt: React.FC<ILayoutProps>) => LayoutCreator
+type WithPropsFC = (props: any) => React.FC
 
 export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   const { name } = opts
@@ -204,13 +206,13 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   const validate = opts.validate || (() => [])
   const initialProps = opts.props || {}
 
-  const [[Cmpt, helpers]] = React.useState<[React.FC, ILayoutHelpers]>(() => {
+  const [[Cmpt, helpers]] = React.useState<[WithPropsFC, ILayoutHelpers]>(() => {
     const title = camelToTitle(name)
     const kebab = titleToKebab(title)
     const snake = kebabToSnake(kebab)
     const upperCamel = camelToUpperCamel(name)
     const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
-    const fc: React.FC = props => {
+    const fc = (initialProps: any):React.FC =>  props => {
       inputs = inputs.map(getUpdated)
       const errors = validate(inputs)
       return (
@@ -230,15 +232,16 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   })
   const errors = validate(inputs)
   const meta = {$$__inputs_type: "input"}
+  const CmptWithProps = Cmpt(initialProps)
 
   return {
-    Cmpt,
+    Cmpt: CmptWithProps,
     inputs,
     errors,
     meta,
     helpers,
     name,
-    [helpers.upperCamel]: Cmpt,
+    [helpers.upperCamel]: CmptWithProps,
     [name + "Inputs"]: inputs,
     [name + "Errors"]: errors,
     [name + "Meta"]: meta,
