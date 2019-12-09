@@ -68,7 +68,14 @@ export interface IInputOpts {
   props?: { [key: string]: any}
 }
 
-export const createInput = (InputCmpt): any => (opts: IInputOpts) => {
+interface IInputProps {
+  props?: { [key: string]: any}
+  state: IFieldzSingleState
+  actions: ReactFieldzSingleActions
+  helpers: IInputHelpers
+}
+
+export const createInput = (InputCmpt: React.FC<IInputProps>) => (opts: IInputOpts) => {
   const {init, name} = opts
   const validate = opts.validate || (() => [])
   const initialProps = opts.props || {}
@@ -115,10 +122,6 @@ export const createInput = (InputCmpt): any => (opts: IInputOpts) => {
   }
 }
 
-const byKey = inputs => {
-
-}
-
 export interface ILayoutHelpers {
   kebab: string
   snake: string
@@ -132,6 +135,13 @@ export interface ILayoutOpts {
   inputs?: any[]
   validate?: (inputs?: any[]) => Error[]
   props?: { [key: string]: any}
+}
+
+interface ILayoutProps {
+  helpers: ILayoutHelpers
+  inputs: any[]
+  props?: { [key: string]: any}
+  errors: Error[]
 }
 
 const getType = val => {
@@ -156,7 +166,8 @@ const getUpdated = item => {
   return item
 }
 
-export const createLayout = (LayoutCmpt: any) => (opts: ILayoutOpts) => {
+
+export const createLayout = (LayoutCmpt: React.FC<ILayoutProps>) => (opts: ILayoutOpts) => {
   const { name } = opts
   if (typeof name === "undefined") {
     throw new Error("You must provide a camelcased name for the layout.")
