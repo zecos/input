@@ -66,6 +66,7 @@ export interface IInputOpts {
   init?: any
   validate?: (inputs?: any) => Error[]
   props?: { [key: string]: any}
+  useState?: boolean
 }
 
 interface IInputProps {
@@ -259,11 +260,11 @@ interface ICreateMultiOpts {
   props?: { [key: string]: any}
 }
 
-// export const createMulti = (opts: ICreateMultiOpts) => {
-//   const init = opts.init || []
-//   const [state, setState] = React.useState(init)
-//   const add = () => {
+export const createMulti = (opts: ICreateMultiOpts) => {
+  const init = opts.init || []
+  const [state, setState] = React.useState(init)
+  const add = () => {
     
-//   }
+  }
   
-// }
+}
