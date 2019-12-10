@@ -64,7 +64,7 @@ export const getHelpers = ({actions, name}): IInputHelpers => {
 export interface IInputOpts {
   name: string
   init?: any
-  validate?: (inputs?: any[]) => Error[]
+  validate?: (inputs?: any) => Error[]
   props?: { [key: string]: any}
 }
 
@@ -92,7 +92,7 @@ interface IMeta {
 export type InputCreator = (opts: IInputOpts) => IInput
 type InputCreatorCreator = (InputCmpt: React.FC<IInputProps>) => InputCreator
 
-export const createInput:InputCreatorCreator = InputCmpt => opts => {
+export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
   const {init, name} = opts
   const validate = opts.validate || (() => [])
   const initialProps = opts.props || {}
@@ -231,7 +231,7 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     return [fc, helpers]
   })
   const errors = validate(inputs)
-  const meta = {$$__inputs_type: "input"}
+  const meta = {$$__inputs_type: "layout"}
   const CmptWithProps = Cmpt(initialProps)
 
   return {
@@ -248,3 +248,22 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     [name + "Helprs"]: helpers,
   }
 }
+
+type MultiCreateFn = () => (ILayout | IInput)[]
+
+interface ICreateMultiOpts {
+  name: string
+  create: MultiCreateFn
+  validate?: (inputs: any[]) => Error[]
+  init?: (ILayout | IInput)[]
+  props?: { [key: string]: any}
+}
+
+// export const createMulti = (opts: ICreateMultiOpts) => {
+//   const init = opts.init || []
+//   const [state, setState] = React.useState(init)
+//   const add = () => {
+    
+//   }
+  
+// }
