@@ -2,7 +2,6 @@ import * as React from "react"
 import { IFieldzSingleState } from "@zecos/fieldz/types"
 import { useField, ReactFieldzSingleActions } from "@zecos/react-fieldz"
 
-
 const camelToTitle = camelCase => camelCase
   .replace(/([A-Z])/g, match => ` ${match}`)
   .replace(/([0-9]+)/g, match => ` ${match}`)
@@ -105,9 +104,9 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
   
   // have to use singleton to make sure it doesn't create another
   // input every render and lose focus
-  const [[Cmpt, helpers]] = React.useState<[WithPropsFC, IInputHelpers]>(() => {
+  const [[Cmpt, helpers]] = React.useState<[React.FC, IInputHelpers]>(() => {
       const helpers = getHelpers({actions, name})
-      return [initialProps => props => {
+      return [props => {
         const state = actions.getState()
         return (
           <InputCmpt
@@ -124,7 +123,7 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
   })
   const meta = {$$__inputs_type: "input"}
   const state = actions.getState()
-  const CmptWithProps = Cmpt(initialProps)
+  const CmptWithProps = Cmpt
 
   return {
     Cmpt: CmptWithProps,
@@ -207,13 +206,13 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   const validate = opts.validate || (() => [])
   const initialProps = opts.props || {}
 
-  const [[Cmpt, helpers]] = React.useState<[WithPropsFC, ILayoutHelpers]>(() => {
+  const [[Cmpt, helpers]] = React.useState<[React.FC, ILayoutHelpers]>(() => {
     const title = camelToTitle(name)
     const kebab = titleToKebab(title)
     const snake = kebabToSnake(kebab)
     const upperCamel = camelToUpperCamel(name)
     const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
-    const fc = (initialProps: any):React.FC =>  props => {
+    const fc = props => {
       inputs = inputs.map(getUpdated)
       const errors = validate(inputs)
       return (
@@ -233,7 +232,7 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   })
   const errors = validate(inputs)
   const meta = {$$__inputs_type: "layout"}
-  const CmptWithProps = Cmpt(initialProps)
+  const CmptWithProps = Cmpt
 
   return {
     Cmpt: CmptWithProps,
