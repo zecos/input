@@ -793,25 +793,25 @@
   dependencies:
     "@zecos/validatorz" "0.0.1"
 
-"@zecos/react-fieldz@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@zecos/react-fieldz/-/react-fieldz-0.2.0.tgz#e5d590e5c35a0e501734b28e38ef0d722c8ff21d"
-  integrity sha512-4soRUueW6Dh6xhYGnYYZfvbfob2rR9/6IoL+6VutdWLpmEtPFKMsSUOy9sfBNUoTiOulWiNNLKdkZuPLunh09A==
+"@zecos/react-fieldz@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@zecos/react-fieldz/-/react-fieldz-0.2.2.tgz#8f59da81c94bb07a5a80d4e1f5a2515f5391bd44"
+  integrity sha512-g20Tse3mK5F0kI7OjHE2UNu/fZ7tXvw3Pe2KoaxvgBzVmIn3IblUSV1NOtfZBl+/zMkeBD7JNO8k0ubYhg1U+Q==
   dependencies:
     "@zecos/fieldz" "^0.0.8"
     validatorz "^2.3.3"
+
+"@zecos/validators@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@zecos/validators/-/validators-0.0.2.tgz#552dc003af1e5545c5c7cae35b077f0826e660fe"
+  integrity sha512-aQoSjl5szEgsKsLiG610fVsvH9y848R/pYELzuQ7Euo3oHPLFdjFq+fqEujxmQLkoXNK6ioJwhCdjZ2Fp79DlQ==
+  dependencies:
+    human-list "^0.0.1"
 
 "@zecos/validatorz@0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@zecos/validatorz/-/validatorz-0.0.1.tgz#ee670d6748a085c8965a692ee8fcf2e3894a24c3"
   integrity sha512-w38QHxcY7Le+tu8Urws7vcWbmn0cmqiKOUDFHV7SMmUAAmbkJUM6gFaEGfwnCDWip7B9kqrtQXfm6fXWn9cDGA==
-
-"@zecos/validatorz@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@zecos/validatorz/-/validatorz-0.0.2.tgz#2315c10dc48b8a9b3c82de06f548c895187a21b6"
-  integrity sha512-nT8+uFJeTxNSyzixKP6Kv6JUvRHC4sRmGZABwMAL/tvL40oha0VAJxzJ7JvKNTajCOoQqruf2lPsGVaKFechwQ==
-  dependencies:
-    human-list "^0.0.1"
 
 abab@^2.0.0:
   version "2.0.3"
