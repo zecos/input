@@ -145,7 +145,6 @@ const createUpdater = () => {
   const [state, setState] = React.useState(false)
   let x = state
   return () => {
-    console.log("updating")
     x = !x
     setState(!x)
   }
@@ -262,13 +261,13 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   const validate = opts.validate || (() => [])
   const initialProps = opts.props || {}
 
-  const [[Cmpt, helpers]] = React.useState<[WithPropsFC, ILayoutHelpers]>(() => {
+  const [[Cmpt, helpers]] = React.useState<[React.FC, ILayoutHelpers]>(() => {
     const title = camelToTitle(name)
     const kebab = titleToKebab(title)
     const snake = kebabToSnake(kebab)
     const upperCamel = camelToUpperCamel(name)
     const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
-    const fc = (initialProps: any):React.FC =>  props => {
+    const fc = props => {
       inputs = inputs.map(getUpdated)
       const errors = validate(inputs)
       return (
@@ -288,16 +287,15 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   })
   const errors = validate(inputs)
   const meta = {$$__inputs_type: "layout"}
-  const CmptWithProps = Cmpt(initialProps)
 
   return {
-    Cmpt: CmptWithProps,
+    Cmpt,
     inputs,
     errors,
     meta,
     helpers,
     name,
-    [helpers.upperCamel]: CmptWithProps,
+    [helpers.upperCamel]: Cmpt,
     [name + "Inputs"]: inputs,
     [name + "Errors"]: errors,
     [name + "Meta"]: meta,
@@ -327,31 +325,99 @@ const unsetMulti = () => {
 
 type TGetCmpt = (() => (ILayout | IInput))
 type WithPropsAndStateFC = (props: any, state: any) => React.FC
-type MultiSetState = [WithPropsAndStateFC, ILayoutHelpers]
+interface IMultiSetState {
+  Cmpt: React.FC
+  helpers: ILayoutHelpers
+  actions: {[key: string]: any}
+}
 
 export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
   const { name } = opts
   if (typeof name === "undefined") {
     throw new Error("You must provide a camelcased name for the multi-input.")
   }
-  const initialProps = opts.props || {}
   const init = opts.init || []
   const validate = opts.validate || (() => [])
+  const _update = createUpdater()
   const [state, setState] = React.useState(init)
-  const [[Cmpt, helpers]] = React.useState<MultiSetState>(() => {
+  const [{Cmpt, helpers, actions}] = React.useState<IMultiSetState>(() => {
     const title = camelToTitle(name)
     const kebab = titleToKebab(title)
     const snake = kebabToSnake(kebab)
     const upperCamel = camelToUpperCamel(name)
     const helpers = {kebab, snake, title, name, upperCamel}
-    const fc = (initialProps: any, state):React.FC =>  props => {
-      state = state.map(getUpdated)
+    let state = init
+    const splice = (start:number, deleteCount:number, ...getCmpts: TGetCmpt[]) => {
+      const cmpts = getCmpts.map(fn => fn())
+      const removedVals = state.slice(start, start + deleteCount - 1)
+      state = [
+        ...state.slice(0, start-1),
+        ...cmpts,
+        ...state.slice(start + deleteCount - 1)
+      ]
+      return removedVals
+    }
+    const push = (...args: TGetCmpt[]) => {
+      setMulti(_update)
+      const cmpts = args.map(fn => fn())
+      state = [...state, ...cmpts]
+      _update()
+      unsetMulti()
+      return state.length
+    }
+    const pop = () => {
+      const popped = state[state.length - 1]
+      state = state.slice(0, state.length - 1)
+      return popped
+    }
+    const sort = (compareFn?) => {
+      return state = state.slice().sort(compareFn)
+    }
+    const reverse = () => {
+      state = state.slice().reverse()
+      _update()
+      return state
+    }
+    const shift = () => {
+      const newState = state.slice()
+      const shiftVal = newState.shift()
+      state = newState
+      _update()
+      return shiftVal
+    }
+    const unshift = (...args: TGetCmpt[]) => {
+      setMulti(_update)
+      const newCmpts = args.map(fn => fn())
+      const newState = [...newCmpts, ...state]
+      state = newState
+      _update()
+      return newState.length
+    }
+    const fill = (fn: TGetCmpt, start, end) => {
+      state = [
+        ...state.slice(0, start),
+        ...([...new Array(end - start)].map(() => fn())),
+        ...state.slice(end + 1)
+      ]
+      _update()
+    }
+    const actions = {
+      fill,
+      unshift,
+      shift,
+      reverse,
+      sort,
+      pop,
+      push,
+      splice,
+    }
+    const Cmpt = props => {
       const errors = validate(state)
+      console.log(state.length)
       return (
         <MultiCmpt
           inputs={state}
           props={{
-            ...initialProps,
             ...props,
           }}
           errors={errors}
@@ -360,85 +426,25 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
       )
     }
 
-    return [fc, helpers]
+    return {
+      Cmpt,
+      actions,
+      helpers
+    }
   })
   
-  const _update = createUpdater()
-  const splice = (start:number, deleteCount:number, ...getCmpts: TGetCmpt[]) => {
-    const cmpts = getCmpts.map(fn => fn())
-    const newState = [
-      ...state.slice(0, start-1),
-      ...cmpts,
-      ...state.slice(start + deleteCount - 1)
-    ]
-    setState(newState)
-    return state.slice(start, start + deleteCount - 1)
-  }
-  const push = (...args: TGetCmpt[]) => {
-    setMulti(_update)
-    const cmpts = args.map(fn => fn())
-    const newState = [...state, ...cmpts]
-    setState(state)
-    unsetMulti()
-    return newState.length
-  }
-  const pop = () => {
-    setState(state.slice(0, state.length - 1))
-    return state[state.length - 1]
-  }
-  const sort = (compareFn?) => {
-    const sorted = state.slice().sort(compareFn)
-    setState(sorted)
-    return sorted
-  }
-  const reverse = () => {
-    const reversed = state.slice().reverse()
-    setState(reversed)
-    return reversed
-  }
-  const shift = () => {
-    const newState = state.slice()
-    const shiftVal = newState.shift()
-    setState(newState)
-    return shiftVal
-  }
-  const unshift = (...args: TGetCmpt[]) => {
-    setMulti(_update)
-    const newCmpts = args.map(fn => fn())
-    const newState = [...newCmpts, ...state]
-    setState(newState)
-    return newState.length
-  }
-  const fill = (fn: TGetCmpt, start, end) => {
-    const newState = [
-      ...state.slice(0, start),
-      ...([...new Array(end - start)].map(() => fn())),
-      ...state.slice(end + 1)
-    ]
-    setState(newState)
-  }
-  const actions = {
-    fill,
-    unshift,
-    shift,
-    reverse,
-    sort,
-    pop,
-    push,
-    splice,
-  }
   const errors = validate(state)
   const meta = {$$__inputs_type: "multi"}
-  const CmptWithProps = Cmpt(initialProps, state)
+  // const CmptWithProps = Cmpt(initialProps, state)
   return {
-    Cmpt: CmptWithProps,
+    Cmpt,
     inputs:state,
     errors,
     meta,
     helpers,
     name,
     actions,
-    [helpers.upperCamel]: CmptWithProps,
+    [helpers.upperCamel]: Cmpt,
     [name + "Inputs"]: state,
     [name + "Errors"]: errors,
     [name + "Meta"]: meta,
