@@ -99,7 +99,7 @@ const reactify = (fn, update) => (...args) => {
   update()
 } 
 
-const inputGetter = ({InputCmpt, init, validate, update, name}) => {
+const getInput = ({InputCmpt, init, validate, update, name}) => {
     const actions = field({
       init: typeof init === "undefined" ? "" : init,
       validate,
@@ -146,7 +146,7 @@ const createUpdater = () => {
   let x = state
   return () => {
     x = !x
-    setState(!x)
+    setState(x)
   }
 }
 
@@ -164,13 +164,13 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     helpers,
     actions,
     named,
-  }] = (inMulti && [inputGetter({
+  }] = (inMulti && [getInput({
     InputCmpt,
     init,
     validate,
     update: _update,
     name,
-  })]) || React.useState(() => inputGetter({
+  })]) || React.useState(() => getInput({
     InputCmpt,
     init,
     validate,
@@ -250,7 +250,33 @@ export interface ILayout {
 
 export type LayoutCreator = (opts: ILayoutOpts) => ILayout
 type LayoutCreatorCreator = (LayoutCmpt: React.FC<ILayoutProps>) => LayoutCreator
-type WithPropsFC = (props: any) => React.FC
+
+const getLayout = ({LayoutCmpt, validate, name, inputs}) => {
+  const title = camelToTitle(name)
+  const kebab = titleToKebab(title)
+  const snake = kebabToSnake(kebab)
+  const upperCamel = camelToUpperCamel(name)
+  const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
+  const Cmpt = props => {
+    inputs = inputs.map(getUpdated)
+    const errors = validate(inputs)
+    return (
+      <LayoutCmpt
+        inputs={inputs}
+        props={{
+          ...props,
+        }}
+        errors={errors}
+        helpers={helpers}
+      />
+    )
+  }
+
+  return {
+    Cmpt,
+    helpers,
+  }
+}
 
 export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   const { name } = opts
@@ -259,32 +285,22 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   }
   let inputs = opts.inputs || []
   const validate = opts.validate || (() => [])
-  const initialProps = opts.props || {}
 
-  const [[Cmpt, helpers]] = React.useState<[React.FC, ILayoutHelpers]>(() => {
-    const title = camelToTitle(name)
-    const kebab = titleToKebab(title)
-    const snake = kebabToSnake(kebab)
-    const upperCamel = camelToUpperCamel(name)
-    const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
-    const fc = props => {
-      inputs = inputs.map(getUpdated)
-      const errors = validate(inputs)
-      return (
-        <LayoutCmpt
-          inputs={inputs}
-          props={{
-            ...initialProps,
-            ...props,
-          }}
-          errors={errors}
-          helpers={helpers}
-        />
-      )
-    }
-
-    return [fc, helpers]
-  })
+  const [{
+    Cmpt,
+    helpers,
+  }] = (inMulti && [getLayout({
+    LayoutCmpt,
+    validate,
+    name,
+    inputs,
+  })]) || React.useState(() => getLayout({
+    LayoutCmpt,
+    validate,
+    name,
+    inputs,
+  }))
+  
   const errors = validate(inputs)
   const meta = {$$__inputs_type: "layout"}
 
@@ -348,41 +364,47 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     const helpers = {kebab, snake, title, name, upperCamel}
     let state = init
     const splice = (start:number, deleteCount:number, ...getCmpts: TGetCmpt[]) => {
+      setMulti(_update)
       const cmpts = getCmpts.map(fn => fn())
+      unsetMulti()
       const removedVals = state.slice(start, start + deleteCount - 1)
       state = [
         ...state.slice(0, start-1),
         ...cmpts,
         ...state.slice(start + deleteCount - 1)
       ]
+      setState(state)
       return removedVals
     }
     const push = (...args: TGetCmpt[]) => {
       setMulti(_update)
       const cmpts = args.map(fn => fn())
       state = [...state, ...cmpts]
-      _update()
       unsetMulti()
+      setState(state)
       return state.length
     }
     const pop = () => {
       const popped = state[state.length - 1]
       state = state.slice(0, state.length - 1)
+      setState(state)
       return popped
     }
     const sort = (compareFn?) => {
-      return state = state.slice().sort(compareFn)
+      state = state.slice().sort(compareFn)
+      setState(state)
+      return state
     }
     const reverse = () => {
       state = state.slice().reverse()
-      _update()
+      setState(state)
       return state
     }
     const shift = () => {
       const newState = state.slice()
       const shiftVal = newState.shift()
       state = newState
-      _update()
+      setState(state)
       return shiftVal
     }
     const unshift = (...args: TGetCmpt[]) => {
@@ -390,16 +412,19 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
       const newCmpts = args.map(fn => fn())
       const newState = [...newCmpts, ...state]
       state = newState
-      _update()
+      unsetMulti()
+      setState(state)
       return newState.length
     }
     const fill = (fn: TGetCmpt, start, end) => {
+      setMulti(_update)
       state = [
         ...state.slice(0, start),
         ...([...new Array(end - start)].map(() => fn())),
         ...state.slice(end + 1)
       ]
-      _update()
+      unsetMulti()
+      setState(state)
     }
     const actions = {
       fill,
