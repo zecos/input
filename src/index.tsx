@@ -184,7 +184,7 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
   const state = actions.getState()
   const CmptWithProps = Cmpt
 
-  return {
+  const result = {
     Cmpt: CmptWithProps,
     state,
     actions,
@@ -196,6 +196,8 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     ...named,
     name,
   }
+  result[name] = result
+  return result
 }
 
 export interface ILayoutHelpers {
@@ -317,7 +319,7 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   const errors = validate(items)
   const meta = {$$__inputs_type: "layout"}
 
-  return {
+  const result:ILayout = {
     Cmpt,
     items,
     errors,
@@ -330,6 +332,8 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     [name + "Meta"]: meta,
     [name + "Helpers"]: helpers,
   }
+  result[name] = result
+  return result
 }
 
 type MultiCreateFn = () => (ILayout | IInput)[]
@@ -475,7 +479,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
   const errors = validate(newState)
   const meta = {$$__inputs_type: "multi"}
   // const CmptWithProps = Cmpt(initialProps, state)
-  return {
+  const result = {
     Cmpt,
     items:newState,
     errors,
@@ -489,6 +493,8 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     [name + "Meta"]: meta,
     [name + "Helprs"]: helpers,
   }
+  result[name] = result
+  return result
 }
 
 const getDisplayType = (item) => {
