@@ -184,10 +184,10 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
   const state = actions.getState()
   const CmptWithProps = Cmpt
 
-  const result = {
+  const result:IInput = {
     Cmpt: CmptWithProps,
     state,
-    actions,
+    actions: (actions as ReactFieldzSingleActions),
     meta,
     helpers,
     [helpers.upperCamel]: CmptWithProps,
@@ -197,6 +197,12 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     name,
   }
   result[name] = result
+  const display = opts => displayFormData(result, opts)
+  result[helpers.upperCamel + "Display"] = display
+  result.display = display
+  const log = (opts) => logFormData(result, opts)
+  result["log" + helpers.upperCamel] = log
+  result.log = log
   return result
 }
 
@@ -333,6 +339,12 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     [name + "Helpers"]: helpers,
   }
   result[name] = result
+  const display = opts => displayFormData(result, opts)
+  result[helpers.upperCamel + "Display"] = display
+  result.display = display
+  const log = (opts) => logFormData(result, opts)
+  result["log" + helpers.upperCamel] = log
+  result.log = log
   return result
 }
 
@@ -467,6 +479,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
         />
       )
     }
+    
 
     return {
       Cmpt,
@@ -478,6 +491,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
   const newState = state.map(getUpdated)
   const errors = validate(newState)
   const meta = {$$__inputs_type: "multi"}
+  
   // const CmptWithProps = Cmpt(initialProps, state)
   const result = {
     Cmpt,
@@ -491,9 +505,15 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     [name + "Items"]: newState,
     [name + "Errors"]: errors,
     [name + "Meta"]: meta,
-    [name + "Helprs"]: helpers,
+    [name + "Helpers"]: helpers,
   }
   result[name] = result
+  const display = (opts) => displayFormData(result, opts)
+  result[helpers.upperCamel + "Display"] = display
+  result.display = display
+  const log = (opts) => logFormData(result, opts)
+  result["log" + helpers.upperCamel] = log
+  result.log = log
   return result
 }
 
@@ -555,15 +575,84 @@ const displayMulti = ({items, name}, opts, level) => {
     
   
 }
-export const displayFormData:any = (item, opts = {}, level=0) => {
+export const displayFormData:any = (item, opts = {className: ""}, level=0) => {
   const type = getDisplayType(item)
+  let result;
   switch(type) {
     case "layout":
-      return displayLayout(item, opts, level)
+      result = displayLayout(item, opts, level)
+      break
     case "input":
-      return displayInput(item, opts, level)
+      result = displayInput(item, opts, level)
+      break
     case "multi":
-      return displayMulti(item, opts, level)
+      result = displayMulti(item, opts, level)
+      break
   }
-  return ""
+  if (!result) {
+    return <div>Input Not Recognized</div>
+  }
+  return <div className={opts.className}>{result}</div>
+}
+
+const logLayout = ({items, name}, opts, level) => {
+  return (
+      "  ".repeat(level) + name + 
+      items
+        .map((item, i) => getFormData(item, opts, level + 1))
+        .join("\n")
+        + "\n"
+  )
+}
+
+const logErrors = (errs, level) => {
+  return (
+      errs
+        .map((err, i) => "  ".repeat(level) + err.toString())
+        .join("\n")
+  )
+}
+
+const logInput = ({state, name}, opts, level) => {
+  if (opts.full) {
+    return (
+        [
+          name ,
+          `value: ${state.value}`,
+          `errors: \n${logErrors(state.errors, level + 1)}`,
+          `pristine: ${"" + state.pristine}`,
+          `touched: ${"" + state.touched}`
+        ].map(str => "  ".repeat(level) + str + "\n").join("")
+    )
+  }
+  return "  ".repeat(level) + `${name}: ${state.value}` + "\n"
+}
+
+const logMulti = ({items, name}, opts, level) => {
+  return "  ".repeat(level) + name + "\n" +
+    items.map(item => getFormData(item, opts, level + 1)).join("\n") + "\n"
+}
+export const getFormData:any = (item, opts = {}, level=0) => {
+  const type = getDisplayType(item)
+  let result;
+  switch(type) {
+    case "layout":
+      result = logLayout(item, opts, level)
+      break
+    case "input":
+      result = logInput(item, opts, level)
+      break
+    case "multi":
+      result = logMulti(item, opts, level)
+      break
+  }
+  return result
+}
+
+const logFormData = (items, opts) => {
+  const result = getFormData(items, opts)
+  if (!result) {
+    console.log("Input not recognized")
+  }
+  console.log(result)
 }
