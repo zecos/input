@@ -525,10 +525,11 @@ const getDisplayType = (item) => {
   }
 }
 
+
 const displayLayout = ({items, name}, opts, level) => {
   return (
     <div style={{marginLeft: level * 10}}>
-      <h4 style={{textAlign: "left"}}>{name}</h4>
+      <h4 style={{textAlign: "left", margin: "5px auto"}}>{name}</h4>
       {items.map((item, i) => <div key={i}>{displayFormData(item, opts, level + 1)}</div>)}
     </div>
   )
@@ -550,7 +551,7 @@ const displayInput = ({state, name}, opts, level) => {
   if (opts.full) {
     return (
       <div style={{marginLeft: level * 10}}>
-        <h4 style={{textAlign: "left"}}>{name}</h4>
+      <h4 style={{textAlign: "left", margin: "5px auto"}}>{name}</h4>
         value: {state.value}<br />
         errors: {renderDisplayErrors(state.errors, level + 1)}
         pristine: {"" + state.pristine}<br />
@@ -568,7 +569,7 @@ const displayInput = ({state, name}, opts, level) => {
 const displayMulti = ({items, name}, opts, level) => {
   return (
     <div style={{marginLeft: level * 10}}>
-      <h4 style={{textAlign: "left"}}>{name}</h4>
+      <h4 style={{textAlign: "left", margin: "5px auto"}}>{name}</h4>
       {items.map((item, i) => <div key={i}>{displayFormData(item, opts, level + 1)}</div>)}
     </div>
   )
@@ -597,7 +598,7 @@ export const displayFormData:any = (item, opts = {className: ""}, level=0) => {
 
 const logLayout = ({items, name}, opts, level) => {
   return (
-      "  ".repeat(level) + name + 
+      "  ".repeat(level) + name + "\n" +
       items
         .map((item, i) => getFormData(item, opts, level + 1))
         .join("\n")
@@ -625,7 +626,7 @@ const logInput = ({state, name}, opts, level) => {
         ].map(str => "  ".repeat(level) + str + "\n").join("")
     )
   }
-  return "  ".repeat(level) + `${name}: ${state.value}` + "\n"
+  return "  ".repeat(level) + `${name}: ${state.value}`
 }
 
 const logMulti = ({items, name}, opts, level) => {
