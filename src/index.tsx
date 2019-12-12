@@ -205,14 +205,14 @@ export interface ILayoutHelpers {
 
 export interface ILayoutOpts {
   name: string
-  inputs?: any[]
+  items?: any[]
   validate?: (inputs?: any[]) => Error[]
   props?: { [key: string]: any}
 }
 
 interface ILayoutProps {
   helpers: ILayoutHelpers
-  inputs: any[]
+  items: any[]
   props: { [key: string]: any}
   errors: Error[]
 }
@@ -225,15 +225,21 @@ const getType = val => {
 }
 
 const getUpdated = item => {
-  if (getType(item) === "input") {
+  const type = getType(item)
+  if (type === "input") {
     return {
       ...item,
       state: item.actions.getState()
     }
-  } else if (getType(item) === "layout") {
+  } else if (type === "layout") {
     return {
       ...item,
-      inputs: item.inputs.map(getUpdated)
+      items: item.items.map(getUpdated)
+    }
+  } else if (type === "multi") {
+    return {
+      ...item,
+      items: item.items.map(getUpdated)
     }
   }
   return item
@@ -251,18 +257,18 @@ export interface ILayout {
 export type LayoutCreator = (opts: ILayoutOpts) => ILayout
 type LayoutCreatorCreator = (LayoutCmpt: React.FC<ILayoutProps>) => LayoutCreator
 
-const getLayout = ({LayoutCmpt, validate, name, inputs}) => {
+const getLayout = ({LayoutCmpt, validate, name, items}) => {
   const title = camelToTitle(name)
   const kebab = titleToKebab(title)
   const snake = kebabToSnake(kebab)
   const upperCamel = camelToUpperCamel(name)
   const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
   const Cmpt = props => {
-    inputs = inputs.map(getUpdated)
-    const errors = validate(inputs)
+    items = items.map(getUpdated)
+    const errors = validate(items)
     return (
       <LayoutCmpt
-        inputs={inputs}
+        items={items}
         props={{
           ...props,
         }}
@@ -283,7 +289,7 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   if (typeof name === "undefined") {
     throw new Error("You must provide a camelcased name for the layout.")
   }
-  let inputs = opts.inputs || []
+  let items = opts.items || []
   const validate = opts.validate || (() => [])
 
   const [{
@@ -293,26 +299,26 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     LayoutCmpt,
     validate,
     name,
-    inputs,
+    items,
   })]) || React.useState(() => getLayout({
     LayoutCmpt,
     validate,
     name,
-    inputs,
+    items,
   }))
   
-  const errors = validate(inputs)
+  const errors = validate(items)
   const meta = {$$__inputs_type: "layout"}
 
   return {
     Cmpt,
-    inputs,
+    items,
     errors,
     meta,
     helpers,
     name,
     [helpers.upperCamel]: Cmpt,
-    [name + "Inputs"]: inputs,
+    [name + "Items"]: items,
     [name + "Errors"]: errors,
     [name + "Meta"]: meta,
     [name + "Helpers"]: helpers,
@@ -439,7 +445,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
       const errors = validate(state)
       return (
         <MultiCmpt
-          inputs={[]}
+          items={state}
           props={{
             ...props,
           }}
@@ -456,21 +462,93 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     }
   })
   
-  const errors = validate(state)
+  const newState = state.map(getUpdated)
+  const errors = validate(newState)
   const meta = {$$__inputs_type: "multi"}
   // const CmptWithProps = Cmpt(initialProps, state)
   return {
     Cmpt,
-    inputs:state,
+    items:newState,
     errors,
     meta,
     helpers,
     name,
     actions,
     [helpers.upperCamel]: Cmpt,
-    [name + "Inputs"]: state,
+    [name + "Items"]: newState,
     [name + "Errors"]: errors,
     [name + "Meta"]: meta,
     [name + "Helprs"]: helpers,
   }
+}
+
+const getDisplayType = (item) => {
+  if (typeof item === "object" && typeof item.meta === "object") {
+    return item.meta.$$__inputs_type
+  } else {
+    return ""
+  }
+}
+
+const displayLayout = ({items, name}, opts, level) => {
+  return (
+    <div style={{marginLeft: level * 10}}>
+      <h4 style={{textAlign: "left"}}>{name}</h4>
+      {items.map((item, i) => <div key={i}>{displayFormData(item, opts, level + 1)}</div>)}
+    </div>
+  )
+}
+
+const renderDisplayErrors = (errs, level) => {
+  return (
+    <div>
+      {errs.map((err, i) => (
+        <div style={{marginLeft: level * 10}} key={i}>
+          {err.toString()}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const displayInput = ({state, name}, opts, level) => {
+  if (opts.full) {
+    return (
+      <div style={{marginLeft: level * 10}}>
+        <h4 style={{textAlign: "left"}}>{name}</h4>
+        value: {state.value}<br />
+        errors: {renderDisplayErrors(state.errors, level + 1)}
+        pristine: {"" + state.pristine}<br />
+        touched: {"" + state.touched}<br />
+      </div>
+    )
+  }
+  return (
+    <div style={{marginLeft: level * 10}}>
+      {name}: {state.value}
+    </div>
+  )
+}
+
+const displayMulti = ({items, name}, opts, level) => {
+  return (
+    <div style={{marginLeft: level * 10}}>
+      <h4 style={{textAlign: "left"}}>{name}</h4>
+      {items.map((item, i) => <div key={i}>{displayFormData(item, opts, level + 1)}</div>)}
+    </div>
+  )
+    
+  
+}
+export const displayFormData:any = (item, opts = {}, level=0) => {
+  const type = getDisplayType(item)
+  switch(type) {
+    case "layout":
+      return displayLayout(item, opts, level)
+    case "input":
+      return displayInput(item, opts, level)
+    case "multi":
+      return displayMulti(item, opts, level)
+  }
+  return ""
 }
