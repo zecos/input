@@ -801,13 +801,6 @@
     "@zecos/fieldz" "^0.0.8"
     validatorz "^2.3.3"
 
-"@zecos/validators@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@zecos/validators/-/validators-0.0.2.tgz#552dc003af1e5545c5c7cae35b077f0826e660fe"
-  integrity sha512-aQoSjl5szEgsKsLiG610fVsvH9y848R/pYELzuQ7Euo3oHPLFdjFq+fqEujxmQLkoXNK6ioJwhCdjZ2Fp79DlQ==
-  dependencies:
-    human-list "^0.0.1"
-
 "@zecos/validatorz@0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@zecos/validatorz/-/validatorz-0.0.1.tgz#ee670d6748a085c8965a692ee8fcf2e3894a24c3"
@@ -4796,11 +4789,6 @@ https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
-
-human-list@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/human-list/-/human-list-0.0.1.tgz#5cb67732d496a0251aaec3c1ee39122c76111c25"
-  integrity sha512-ZcIwQzHESdbgMf8zMxzWMRCD3FD7uox5OiKhm8KMi8GuZcFJWoOmQOMSdMDR1Xo0tqDN397LkTUzdtFzKsmMNw==
 
 humanize-url@^1.0.0:
   version "1.0.1"

@@ -28,8 +28,7 @@
   "types": "dist/src/index.d.ts",
   "dependencies": {
     "@zecos/fieldz": "^0.0.8",
-    "@zecos/react-fieldz": "^0.2.2",
-    "@zecos/validators": "^0.0.2"
+    "@zecos/react-fieldz": "^0.2.2"
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",

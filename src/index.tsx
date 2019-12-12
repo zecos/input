@@ -99,7 +99,7 @@ const reactify = (fn, update) => (...args) => {
   update()
 } 
 
-const getInput = ({InputCmpt, init, validate, update, name}) => {
+const getInput = ({InputCmpt, init, validate, update, name, initialProps}) => {
     const actions = field({
       init: typeof init === "undefined" ? "" : init,
       validate,
@@ -117,6 +117,7 @@ const getInput = ({InputCmpt, init, validate, update, name}) => {
         return (
           <InputCmpt
             props={{
+              ...initialProps,
               ...props,
             }}
             helpers={helpers}
@@ -169,6 +170,7 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     init,
     validate,
     update: _update,
+    initialProps,
     name,
   })]) || React.useState(() => getInput({
     InputCmpt,
@@ -176,6 +178,7 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     validate,
     update: _update,
     name,
+    initialProps,
   }))
   const meta = {$$__inputs_type: "input"}
   const state = actions.getState()
@@ -257,7 +260,7 @@ export interface ILayout {
 export type LayoutCreator = (opts: ILayoutOpts) => ILayout
 type LayoutCreatorCreator = (LayoutCmpt: React.FC<ILayoutProps>) => LayoutCreator
 
-const getLayout = ({LayoutCmpt, validate, name, items}) => {
+const getLayout = ({LayoutCmpt, validate, name, items, initialProps}) => {
   const title = camelToTitle(name)
   const kebab = titleToKebab(title)
   const snake = kebabToSnake(kebab)
@@ -270,6 +273,7 @@ const getLayout = ({LayoutCmpt, validate, name, items}) => {
       <LayoutCmpt
         items={items}
         props={{
+          ...initialProps,
           ...props,
         }}
         errors={errors}
@@ -290,6 +294,7 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     throw new Error("You must provide a camelcased name for the layout.")
   }
   let items = opts.items || []
+  const initialProps = opts.props || {}
   const validate = opts.validate || (() => [])
 
   const [{
@@ -300,11 +305,13 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     validate,
     name,
     items,
+    initialProps,
   })]) || React.useState(() => getLayout({
     LayoutCmpt,
     validate,
     name,
     items,
+    initialProps,
   }))
   
   const errors = validate(items)
@@ -358,6 +365,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     throw new Error("You must provide a camelcased name for the multi-input.")
   }
   const init = opts.init || []
+  const initialProps = opts.props || {}
   const validate = opts.validate || (() => [])
   const _update = createUpdater()
   const [state, setState] = React.useState(init)
@@ -447,6 +455,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
         <MultiCmpt
           items={state}
           props={{
+            ...initialProps,
             ...props,
           }}
           errors={errors}
