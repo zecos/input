@@ -22,8 +22,8 @@ export interface IInputHelpers {
   camel: string
   kebab: string
   "aria-label": string
-  onChange: (e: React.ChangeEvent) => void
-  onBlur: (e: any) => void
+  handleChange: (e: React.ChangeEvent) => void
+  handleBlur: (e: any) => void
   label: string
   name: string
   snake: string
@@ -43,12 +43,12 @@ export const getHelpers = ({actions, name}): IInputHelpers => {
   const label = title
   const htmlFor = _name
   const { setValue, setTouched } = actions
-  const onChange = e => setValue(e.target.value)
-  const onBlur = () => setTouched()
+  const handleChange = e => setValue(e.target.value)
+  const handleBlur = () => setTouched()
 
   return {
-    onChange,
-    onBlur,
+    handleChange,
+    handleBlur,
     id,
     name: _name,
     label,
