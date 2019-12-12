@@ -1,12 +1,12 @@
-### @zecos/inputs
+### @zecos/input
 
-`@zecos/inputs` is a library for quickly creating React UI components with little to no boilerplate.
+`@zecos/input` is a library for quickly creating React UI components with little to no boilerplate.
 
 #### Installation
 
-`yarn add @zecos/inputs`
+`yarn add @zecos/input`
 
-`npm i -S @zecos/inputs`
+`npm i -S @zecos/input`
 
 #### Example
 
@@ -19,8 +19,8 @@ export const text = createInput(({helpers, state}) => {
       name,
       label,
       value,
-      onChange,
-      onBlur,
+      handleChange,
+      handleBlur,
     } = helpers
     
     const {touched, errors} = state
@@ -34,8 +34,8 @@ export const text = createInput(({helpers, state}) => {
           name={name}
           aria-label={label}
           value={value}
-          onChange={onChange}
-          onBlur={onblur
+          onChange={handleChange}
+          onBlur={handleBlur}
           id={id}
         />
       </div>
@@ -47,7 +47,7 @@ export const text = createInput(({helpers, state}) => {
 // Form.tsx
 
 import React from "react"
-import { nameValidator } from "@zecos/validators"
+import { validateName } from "@zecos/validate"
 import { text } from "./text"
 
 export const Form = () => {
