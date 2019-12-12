@@ -1,7 +1,6 @@
 import * as React from "react"
-import { IFieldzSingleState } from "@zecos/fieldz/types"
-import { ReactFieldzSingleActions } from "@zecos/react-fieldz"
-import { field } from "@zecos/fieldz"
+import { IFieldzSingleState } from "@zecos/fields/types"
+import { field } from "@zecos/fields"
 
 const camelToTitle = camelCase => camelCase
   .replace(/([A-Z])/g, match => ` ${match}`)
@@ -16,6 +15,14 @@ const titleToKebab = title => title
 const kebabToSnake = (kebab: string) => kebab.replace("-", "_")
 
 const camelToUpperCamel = (name: string) => name.charAt(0).toUpperCase() + name.slice(1)
+
+export interface ReactFieldzSingleActions {
+  setValue: (newVal) => any
+  reset: () => any
+  setTouched: () => any
+  refreshErrors: () => any
+  getState: () => any
+}
 
 export interface IInputHelpers {
   title: string

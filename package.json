@@ -1,10 +1,10 @@
 {
-  "name": "@zecos/inputs",
-  "version": "0.0.16",
+  "name": "@zecos/input",
+  "version": "0.0.0",
   "description": "Input UI components for zecos",
   "author": "Zane Hitchcox",
   "license": "MIT",
-  "repository": "https://github.com/zecos/inputs",
+  "repository": "https://github.com/zecos/input",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
@@ -27,8 +27,7 @@
   },
   "types": "dist/src/index.d.ts",
   "dependencies": {
-    "@zecos/fieldz": "^0.0.8",
-    "@zecos/react-fieldz": "^0.2.2"
+    "@zecos/fieldz": "^0.0.8"
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",
