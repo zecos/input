@@ -1,6 +1,6 @@
 import * as React from "react"
-import { IFieldzSingleState } from "@zecos/fields/types"
-import { field } from "@zecos/fields"
+import { IFieldSingleState } from "@zecos/field/types"
+import { field } from "@zecos/field"
 
 const camelToTitle = camelCase => camelCase
   .replace(/([A-Z])/g, match => ` ${match}`)
@@ -16,7 +16,7 @@ const kebabToSnake = (kebab: string) => kebab.replace("-", "_")
 
 const camelToUpperCamel = (name: string) => name.charAt(0).toUpperCase() + name.slice(1)
 
-export interface ReactFieldzSingleActions {
+export interface ReactFieldSingleActions {
   setValue: (newVal) => any
   reset: () => any
   setTouched: () => any
@@ -78,16 +78,16 @@ export interface IInputOpts {
 }
 
 interface IInputProps {
-  state: IFieldzSingleState
-  actions: ReactFieldzSingleActions
+  state: IFieldSingleState
+  actions: ReactFieldSingleActions
   helpers: IInputHelpers
   props: { [key: string]: any }
 }
 
 export interface IInput {
   Cmpt: React.FC
-  state: IFieldzSingleState
-  actions:ReactFieldzSingleActions
+  state: IFieldSingleState
+  actions:ReactFieldSingleActions
   meta: IMeta
   helpers: IInputHelpers
   name: string
@@ -194,7 +194,7 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
   const result:IInput = {
     Cmpt: CmptWithProps,
     state,
-    actions: (actions as ReactFieldzSingleActions),
+    actions: (actions as ReactFieldSingleActions),
     meta,
     helpers,
     [helpers.upperCamel]: CmptWithProps,
