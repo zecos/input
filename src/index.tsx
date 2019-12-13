@@ -536,7 +536,7 @@ const getDisplayType = (item) => {
 const displayLayout = ({items, name}, opts, level) => {
   return (
     <div style={{marginLeft: level * 10}}>
-      <h4 style={{textAlign: "left", margin: "5px auto"}}>{name}</h4>
+      <b style={{textAlign: "left", margin: "5px auto"}}>{name}</b>
       {items.map((item, i) => <div key={i}>{displayFormData(item, opts, level + 1)}</div>)}
     </div>
   )
