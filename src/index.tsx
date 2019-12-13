@@ -536,7 +536,7 @@ const getDisplayType = (item) => {
 const displayLayout = ({items, name}, opts, level) => {
   return (
     <div style={{marginLeft: level * 10}}>
-      <b style={{textAlign: "left", margin: "5px auto"}}>{name}</b>
+      <b style={{textAlign: "left", margin: "5px auto"}}>{name}</b><br />
       {items.map((item, i) => <div key={i}>{displayFormData(item, opts, level + 1)}</div>)}
     </div>
   )
@@ -558,7 +558,7 @@ const displayInput = ({state, name}, opts, level) => {
   if (opts.full) {
     return (
       <div style={{marginLeft: level * 10}}>
-      <h4 style={{textAlign: "left", margin: "5px auto"}}>{name}</h4>
+      <b style={{textAlign: "left", margin: "5px auto"}}>{name}</b><br />
         value: {state.value}<br />
         errors: {renderDisplayErrors(state.errors, level + 1)}
         pristine: {"" + state.pristine}<br />
@@ -576,7 +576,7 @@ const displayInput = ({state, name}, opts, level) => {
 const displayMulti = ({items, name}, opts, level) => {
   return (
     <div style={{marginLeft: level * 10}}>
-      <h4 style={{textAlign: "left", margin: "5px auto"}}>{name}</h4>
+      <b style={{textAlign: "left", margin: "5px auto"}}>{name}</b><br />
       {items.map((item, i) => <div key={i}>{displayFormData(item, opts, level + 1)}</div>)}
     </div>
   )
