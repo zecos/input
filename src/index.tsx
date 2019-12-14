@@ -95,7 +95,7 @@ export interface IInput {
 }
 
 interface IMeta {
-  $$__inputs_type: string
+  $$__input_type: string
 }
 
 export type InputCreator = (opts: IInputOpts) => IInput
@@ -107,31 +107,31 @@ const reactify = (fn, update) => (...args) => {
 } 
 
 const getInput = ({InputCmpt, init, validate, update, name, initialProps}) => {
-    const actions = field({
-      init: typeof init === "undefined" ? "" : init,
-      validate,
-    })
-    const reactActions = {}
-    const {getState, ...toReactify} = actions
-    for (const actionName in toReactify) {
-      reactActions[actionName] = reactify(actions[actionName], update)
-    }
-    
-    const helpers = getHelpers({actions: reactActions, name})
-    return {
-      Cmpt: props => {
-        const state = actions.getState()
-        return (
-          <InputCmpt
-            props={{
-              ...initialProps,
-              ...props,
-            }}
-            helpers={helpers}
-            state={state}
-            actions={reactActions}
-          />
-        )
+  const actions = field({
+    init: typeof init === "undefined" ? "" : init,
+    validate,
+  })
+  const reactActions = {}
+  const {getState, ...toReactify} = actions
+  for (const actionName in toReactify) {
+    reactActions[actionName] = reactify(actions[actionName], update)
+  }
+  
+  const helpers = getHelpers({actions: reactActions, name})
+  return {
+    Cmpt: props => {
+      const state = actions.getState()
+      return (
+        <InputCmpt
+          props={{
+            ...initialProps,
+            ...props,
+          }}
+          helpers={helpers}
+          state={state}
+          actions={reactActions}
+        />
+      )
     },
     helpers,
     actions: {
@@ -187,7 +187,7 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     name,
     initialProps,
   }))
-  const meta = {$$__inputs_type: "input"}
+  const meta = {$$__input_type: "input"}
   const state = actions.getState()
   const CmptWithProps = Cmpt
 
@@ -237,7 +237,7 @@ interface ILayoutProps {
 
 const getType = val => {
   if (typeof val === "object" && typeof val.meta === "object") {
-    return val.meta.$$__inputs_type
+    return val.meta.$$__input_type
   }
   return "unknown"
 }
@@ -330,7 +330,7 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   }))
   
   const errors = validate(items)
-  const meta = {$$__inputs_type: "layout"}
+  const meta = {$$__input_type: "layout"}
 
   const result:ILayout = {
     Cmpt,
@@ -355,8 +355,6 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
   return result
 }
 
-type MultiCreateFn = () => (ILayout | IInput)[]
-
 interface ICreateMultiOpts {
   name: string
   validate?: (inputs: any[]) => Error[]
@@ -375,7 +373,6 @@ const unsetMulti = () => {
 }
 
 type TGetCmpt = (() => (ILayout | IInput))
-type WithPropsAndStateFC = (props: any, state: any) => React.FC
 interface IMultiSetState {
   Cmpt: React.FC
   helpers: ILayoutHelpers
@@ -497,7 +494,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
   
   const newState = state.map(getUpdated)
   const errors = validate(newState)
-  const meta = {$$__inputs_type: "multi"}
+  const meta = {$$__input_type: "multi"}
   
   // const CmptWithProps = Cmpt(initialProps, state)
   const result = {
@@ -526,7 +523,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
 
 const getDisplayType = (item) => {
   if (typeof item === "object" && typeof item.meta === "object") {
-    return item.meta.$$__inputs_type
+    return item.meta.$$__input_type
   } else {
     return ""
   }
