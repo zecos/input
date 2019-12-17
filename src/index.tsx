@@ -204,9 +204,9 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     name,
   }
   result[name] = result
-  const display = opts => displayFormData(result, opts)
-  result[helpers.upperCamel + "Display"] = display
-  result.display = display
+  const Display = opts => displayFormData(result, opts)
+  result[helpers.upperCamel + "Display"] = Display
+  result.Display = Display
   const log = (opts) => logFormData(result, opts)
   result["log" + helpers.upperCamel] = log
   result.log = log
@@ -346,9 +346,9 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     [name + "Helpers"]: helpers,
   }
   result[name] = result
-  const display = opts => displayFormData(result, opts)
-  result[helpers.upperCamel + "Display"] = display
-  result.display = display
+  const Display = opts => displayFormData(result, opts)
+  result[helpers.upperCamel + "Display"] = Display
+  result.Display = Display
   const log = (opts) => logFormData(result, opts)
   result["log" + helpers.upperCamel] = log
   result.log = log
@@ -512,9 +512,9 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     [name + "Helpers"]: helpers,
   }
   result[name] = result
-  const display = (opts) => displayFormData(result, opts)
-  result[helpers.upperCamel + "Display"] = display
-  result.display = display
+  const Display = (opts) => displayFormData(result, opts)
+  result[helpers.upperCamel + "Display"] = Display
+  result.Display = Display
   const log = (opts) => logFormData(result, opts)
   result["log" + helpers.upperCamel] = log
   result.log = log
