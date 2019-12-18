@@ -504,7 +504,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     return {
       Cmpt,
       actions,
-      helpers
+      helpers,
     }
   })
   
@@ -522,6 +522,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     name,
     actions,
     [helpers.upperCamel]: Cmpt,
+    [name + "Actions"]: actions,
     [name + "Items"]: newState,
     [name + "Errors"]: errors,
     [name + "Meta"]: meta,
@@ -653,6 +654,7 @@ const logInput = ({state, name}, opts, level) => {
 }
 
 const logMulti = ({items, name}, opts, level) => {
+  console.log("multi items", items)
   return "  ".repeat(level) + name + "\n" +
     items.map(item => getFormData(item, opts, level + 1)).join("\n") + "\n"
 }
