@@ -39,19 +39,19 @@ export interface IInputHelpers {
   upperCamel: string
 }
 
-export const getHelpers = ({actions, name}): IInputHelpers => {
+export const getHelpers = ({actions, name, opts}): IInputHelpers => {
   const title = camelToTitle(name)
   const kebab = titleToKebab(title)
   const snake = kebabToSnake(kebab)
   const upperCamel = camelToUpperCamel(name)
   const camel = name
-  const id = kebab
+  const id = opts.id || kebab
   const _name = kebab
-  const label = title
+  const label = opts.label || title
   const htmlFor = _name
   const { setValue, setTouched } = actions
-  const handleChange = e => setValue(e.target.value)
-  const handleBlur = () => setTouched()
+  const handleChange = opts.handleChange || (e => setValue(e.target.value))
+  const handleBlur = opts.handleBlur || (() => setTouched())
 
   return {
     handleChange,
@@ -75,6 +75,10 @@ export interface IInputOpts {
   props?: { [key: string]: any}
   useState?: boolean
   updater?: () => void
+  label?: string
+  id?: string
+  handleChange?: () => any
+  handleBlur?: () => any
 }
 
 interface IInputProps {
@@ -106,7 +110,7 @@ const reactify = (fn, update) => (...args) => {
   update()
 } 
 
-const getInput = ({InputCmpt, init, validate, update, name, initialProps}) => {
+const getInput = ({InputCmpt, init, validate, update, name, initialProps, opts}) => {
   const actions = field({
     init: typeof init === "undefined" ? "" : init,
     validate,
@@ -117,7 +121,7 @@ const getInput = ({InputCmpt, init, validate, update, name, initialProps}) => {
     reactActions[actionName] = reactify(actions[actionName], update)
   }
   
-  const helpers = getHelpers({actions: reactActions, name})
+  const helpers = getHelpers({actions: reactActions, name, opts})
   return {
     Cmpt: props => {
       const state = actions.getState()
@@ -179,6 +183,7 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     update: _update,
     initialProps,
     name,
+    opts,
   })]) || React.useState(() => getInput({
     InputCmpt,
     init,
@@ -186,6 +191,7 @@ export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
     update: _update,
     name,
     initialProps,
+    opts,
   }))
   const meta = {$$__input_type: "input"}
   const state = actions.getState()
@@ -219,6 +225,8 @@ export interface ILayoutHelpers {
   title: string
   upperCamel: string
   name: string
+  id: string
+  label: string
 }
 
 export interface ILayoutOpts {
@@ -275,12 +283,14 @@ export interface ILayout {
 export type LayoutCreator = (opts: ILayoutOpts) => ILayout
 type LayoutCreatorCreator = (LayoutCmpt: React.FC<ILayoutProps>) => LayoutCreator
 
-const getLayout = ({LayoutCmpt, validate, name, items, initialProps}) => {
+const getLayout = ({LayoutCmpt, validate, name, items, initialProps, opts}) => {
   const title = camelToTitle(name)
   const kebab = titleToKebab(title)
   const snake = kebabToSnake(kebab)
   const upperCamel = camelToUpperCamel(name)
-  const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel}
+  const label = opts.label || title
+  const id = opts.id || name
+  const helpers:ILayoutHelpers = {kebab, snake, title, name, upperCamel, id, label}
   const Cmpt = props => {
     items = items.map(getUpdated)
     const errors = validate(items)
@@ -321,12 +331,14 @@ export const createLayout:LayoutCreatorCreator = LayoutCmpt => opts => {
     name,
     items,
     initialProps,
+    opts,
   })]) || React.useState(() => getLayout({
     LayoutCmpt,
     validate,
     name,
     items,
     initialProps,
+    opts,
   }))
   
   const errors = validate(items)
@@ -360,6 +372,8 @@ interface ICreateMultiOpts {
   validate?: (inputs: any[]) => Error[]
   init?: (ILayout | IInput)[]
   props?: { [key: string]: any}
+  id?: string
+  label?: string
 }
 const setMulti = (_update) => {
   inMulti = true
@@ -394,7 +408,9 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
     const kebab = titleToKebab(title)
     const snake = kebabToSnake(kebab)
     const upperCamel = camelToUpperCamel(name)
-    const helpers = {kebab, snake, title, name, upperCamel}
+    const label = opts.label || title
+    const id = opts.id || name
+    const helpers = {kebab, snake, title, name, upperCamel, id, label}
     let state = init
     const splice = (start:number, deleteCount:number, ...getCmpts: TGetCmpt[]) => {
       setMulti(_update)
