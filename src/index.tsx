@@ -563,9 +563,12 @@ const displayInput = ({state, name}, opts, level) => {
       </div>
     )
   }
+  const stringVal = typeof state.value === "string" ? state.value :
+    typeof state.value.toString === "function" ? state.value.toString() :
+      JSON.stringify(state.value)
   return (
     <div style={{marginLeft: level * 10}}>
-      {name}: {state.value}
+      {name}: {stringVal}
     </div>
   )
 }
