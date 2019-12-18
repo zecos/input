@@ -164,6 +164,9 @@ const createUpdater = () => {
 
 export const createInput = (InputCmpt):any => (opts: IInputOpts) => {
   const {init, name} = opts
+  if (typeof name !== 'undefined') {
+    throw new Error("Name must be a camel case string")
+  }
   const validate = opts.validate || (() => [])
   const initialProps = opts.props || {}
   const _update = (inMulti && update) || createUpdater()
