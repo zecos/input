@@ -419,11 +419,11 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
       setMulti(_update)
       const cmpts = getCmpts.map(fn => fn())
       unsetMulti()
-      const removedVals = state.slice(start, start + deleteCount - 1)
+      const removedVals = state.slice(start, start + deleteCount)
       state = [
         ...state.slice(0, start-1),
         ...cmpts,
-        ...state.slice(start + deleteCount - 1)
+        ...state.slice(start + deleteCount)
       ]
       setState(state)
       return removedVals
