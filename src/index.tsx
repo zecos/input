@@ -499,6 +499,7 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
           }}
           errors={errors}
           helpers={helpers}
+          actions={actions}
         />
       )
     }
