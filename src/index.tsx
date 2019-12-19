@@ -489,10 +489,11 @@ export const createMulti = (MultiCmpt:any) => (opts: ICreateMultiOpts) => {
       splice,
     }
     const Cmpt = props => {
-      const errors = validate(state)
+      const newState = state.map(getUpdated)
+      const errors = validate(newState)
       return (
         <MultiCmpt
-          items={state}
+          items={newState}
           props={{
             ...initialProps,
             ...props,
